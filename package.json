@@ -1,0 +1,27 @@
+{
+  "name": "editron-sync-service",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Sascha Goldhofer <sascha.goldhofer@sz.de> (https://github.com/sagold/)",
+  "license": "ISC",
+  "dependencies": {
+    "json-sync": "sueddeutsche/json-sync#develop",
+    "mitt": "^1.0.1",
+    "socket.io-client": "^2.0.3"
+  },
+  "devDependencies": {
+    "json-data-services": "1.x",
+    "editron-core": "2.x",
+    "mithril": "1.x"
+  },
+  "peerDependencies": {
+    "json-data-services": "1.x",
+    "editron-core": "2.x",
+    "mithril": "1.x"
+  }
+}
