@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "editron-core": "2.x",
-    "json-data-services": "1.x",
+    "json-data-services": "2.x",
     "mithril": "1.x",
     "restify": "^5.0.1",
     "socket.io": "^2.0.3"
