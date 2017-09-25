@@ -1,6 +1,6 @@
 {
   "name": "editron-sync-service",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,8 +15,8 @@
     "socket.io-client": "^2.0.3"
   },
   "devDependencies": {
-    "editron-core": "2.x",
-    "json-data-services": "2.x",
+    "editron-core": "^3.1.0",
+    "json-data-services": "^2.0.0",
     "mithril": "1.x",
     "restify": "^5.0.1",
     "socket.io": "^2.0.3"

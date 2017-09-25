@@ -1,0 +1,9 @@
+@import "mithril-material-forms/lib/colors";
+
+.editron-toolbar__users {
+
+    a,
+    .mmf-icon {
+        color: $mmf-color--warning;
+    }
+}
