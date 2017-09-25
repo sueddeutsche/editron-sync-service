@@ -10,10 +10,12 @@ const isValidUrl = /^https?:\/\/.*:\d+.*$/;
 class SyncService {
 
     constructor(controller) {
-        this.controller = controller;
-        this.dataService = controller.data();
         this.connected = false;
         this.emitter = mitt();
+        this.currentLocks = [];
+        this.controller = controller;
+        this.dataService = controller.data();
+        this.locationService = controller.location();
 
         this.onUpdate = this.onUpdate.bind(this);
         this.onSynched = this.onSynched.bind(this);
@@ -21,6 +23,8 @@ class SyncService {
         this.onConnect = this.onConnect.bind(this);
 
         this.dataService.on("afterUpdate", this.onUpdate);
+        this.locationService.on("blur", () => this.updateUserMeta({ focused: false }));
+        this.locationService.on("focus", (pointer) => this.updateUserMeta({ focused: pointer }));
     }
 
     connect(url, id) {
@@ -42,16 +46,47 @@ class SyncService {
         this.client.on("error", this.onError);
         this.client.on("synced", this.onSynched);
 
-        this.transport.on(COMMANDS.updateUsers, (users) => {
-            console.log("User list has updated", users);
-            this.emitter.emit("users", {
-                userId: this.transport.id,
-                users
-            });
-        });
+        this.transport.on(COMMANDS.updateUsers, (users) => this.updateUsers(users));
 
         this.client.initialize();
         console.log(`SyncServer: connect to ${url} in room ${id}`);
+    }
+
+    // @todo this implementation currently misses update pointer events...
+    // flag input fields as locked if they are currently edited by another user
+    lock(lockRequests) {
+        // right now, css solution only - no need for programmatically logic
+        const instances = this.controller.getInstances();
+        this.currentLocks.forEach((user) => {
+            if (instances[user.focused]) {
+                instances[user.focused].forEach((editor) => editor.toElement().classList.remove("editron-lock"));
+            }
+        });
+
+        this.currentLocks = lockRequests;
+        lockRequests.forEach((user) => {
+            if (instances[user.focused]) {
+                instances[user.focused].forEach((editor) => editor.toElement().classList.add("editron-lock"));
+            }
+        });
+    }
+
+    updateUsers(users) {
+        this.emitter.emit("users", {
+            userId: this.transport.id,
+            users
+        });
+
+        this.lock(users.filter((user) => user.id !== this.transport.id));
+    }
+
+    updateUserMeta(data = {}) {
+        if (this.connected === false) {
+            return;
+        }
+        data.id = this.transport.id;
+        // console.log("Update user meta", data);
+        this.transport.emit(COMMANDS.updateUserData, this.id, data);
     }
 
     on(eventName, cb) {
