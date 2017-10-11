@@ -129,6 +129,12 @@ class SyncService {
             this.client.sync();
         }
     }
+
+    destroy() {
+        console.log("destroy socket");
+        this.transport.disconnect();
+        this.transport.destroy();
+    }
 }
 
 
