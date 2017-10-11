@@ -72,6 +72,7 @@ class SyncService {
     }
 
     updateUsers(users) {
+        console.log("Update users and meta", users);
         this.emitter.emit("users", {
             userId: this.transport.id,
             users
@@ -85,7 +86,7 @@ class SyncService {
             return;
         }
         data.id = this.transport.id;
-        // console.log("Update user meta", data);
+        console.log("Send update user meta", data);
         this.transport.emit(COMMANDS.updateUserData, this.id, data);
     }
 
@@ -127,6 +128,12 @@ class SyncService {
             this.data.data = this.dataService.get();
             this.client.sync();
         }
+    }
+
+    destroy() {
+        console.log("destroy socket");
+        this.transport.disconnect();
+        this.transport.destroy();
     }
 }
 
