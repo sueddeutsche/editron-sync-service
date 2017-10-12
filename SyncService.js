@@ -39,7 +39,7 @@ class SyncService {
 
         this.url = url;
         const transport = socket(url, options);
-        this.use(transport);
+        this.use(transport, id);
     }
 
     use(transport, id) {
