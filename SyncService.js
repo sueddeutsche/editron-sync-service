@@ -4,7 +4,7 @@ const JsonSyncClient = require("json-sync/src/client");
 const COMMANDS = require("json-sync/src/commands");
 const socket = require("socket.io-client");
 
-const isValidUrl = /^https?:\/\/.*:\d+.*$/;
+const isValidUrl = /^https?:\/\/.*(:\d+)?.*$/;
 
 
 class SyncService {
