@@ -27,7 +27,7 @@ class SyncService {
         this.locationService.on("focus", (pointer) => this.updateUserMeta({ focused: pointer }));
     }
 
-    connect(url, id) {
+    connect(url, id, options) {
         if (url == null || isValidUrl.test(url) === false) {
             console.error("SyncService abort -- invalid id given", id);
             return;
@@ -37,19 +37,21 @@ class SyncService {
             return;
         }
 
-        this.id = id;
         this.url = url;
-        this.transport = socket(url);
+        const transport = socket(url, options);
+        this.use(transport);
+    }
 
+    use(transport, id) {
+        this.id = id;
+        this.transport = transport;
         this.client = new JsonSyncClient(this.transport, id, diffpatch.options);
         this.client.on("connected", this.onConnect);
         this.client.on("error", this.onError);
         this.client.on("synced", this.onSynched);
-
         this.transport.on(COMMANDS.updateUsers, (users) => this.updateUsers(users));
-
         this.client.initialize();
-        console.log(`SyncServer: connect to ${url} in room ${id}`);
+        console.log(`SyncServer: connecting to room '${id}'...`);
     }
 
     // @todo this implementation currently misses update pointer events...
