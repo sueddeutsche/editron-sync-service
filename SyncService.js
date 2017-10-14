@@ -74,7 +74,7 @@ class SyncService {
     }
 
     updateUsers(users) {
-        console.log("Update users and meta", users);
+        // console.log("Update users and meta", users);
         this.emitter.emit("users", {
             userId: this.transport.id,
             users
@@ -88,7 +88,7 @@ class SyncService {
             return;
         }
         data.id = this.transport.id;
-        console.log("Send update user meta", data);
+        // console.log("Send update user meta", data);
         this.transport.emit(COMMANDS.updateUserData, this.id, data);
     }
 
