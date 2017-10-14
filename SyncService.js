@@ -4,7 +4,7 @@ const JsonSyncClient = require("json-sync/src/client");
 const COMMANDS = require("json-sync/src/commands");
 const socket = require("socket.io-client");
 
-const isValidUrl = /^https?:\/\/.*:\d+.*$/;
+const isValidUrl = /^https?:\/\/.*(:\d+)?.*$/;
 
 
 class SyncService {
@@ -27,7 +27,7 @@ class SyncService {
         this.locationService.on("focus", (pointer) => this.updateUserMeta({ focused: pointer }));
     }
 
-    connect(url, id) {
+    connect(url, id, options) {
         if (url == null || isValidUrl.test(url) === false) {
             console.error("SyncService abort -- invalid id given", id);
             return;
@@ -37,19 +37,21 @@ class SyncService {
             return;
         }
 
-        this.id = id;
         this.url = url;
-        this.transport = socket(url);
+        const transport = socket(url, options);
+        this.use(transport, id);
+    }
 
+    use(transport, id) {
+        this.id = id;
+        this.transport = transport;
         this.client = new JsonSyncClient(this.transport, id, diffpatch.options);
         this.client.on("connected", this.onConnect);
         this.client.on("error", this.onError);
         this.client.on("synced", this.onSynched);
-
         this.transport.on(COMMANDS.updateUsers, (users) => this.updateUsers(users));
-
         this.client.initialize();
-        console.log(`SyncServer: connect to ${url} in room ${id}`);
+        console.log(`SyncServer: connecting to room '${id}'...`);
     }
 
     // @todo this implementation currently misses update pointer events...
@@ -72,7 +74,7 @@ class SyncService {
     }
 
     updateUsers(users) {
-        console.log("Update users and meta", users);
+        // console.log("Update users and meta", users);
         this.emitter.emit("users", {
             userId: this.transport.id,
             users
@@ -86,7 +88,7 @@ class SyncService {
             return;
         }
         data.id = this.transport.id;
-        console.log("Send update user meta", data);
+        // console.log("Send update user meta", data);
         this.transport.emit(COMMANDS.updateUserData, this.id, data);
     }
 
