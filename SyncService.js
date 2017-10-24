@@ -38,6 +38,7 @@ class SyncService {
         }
 
         this.url = url;
+        console.log("create socket", url, options);
         const transport = socket(url, options);
         this.use(transport, id);
     }
@@ -101,10 +102,8 @@ class SyncService {
     }
 
     onSynched() {
-        // console.log("sync apply changes");
         // an update from the server has been applied, you can perform the updates in your application now
-        // @todo pass data through schemaService.addDefaultData before applying changes
-        this.dataService.set("#", this.data.data, true);
+        this.controller.setData(this.data.data, true);
     }
 
     onError(error) {
