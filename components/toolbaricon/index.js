@@ -5,10 +5,17 @@ const __ = require("editron-core/utils/i18n").translate;
 const View = {
     view(vnode) {
         const users = vnode.attrs.users;
+        const userList = users
+            .map((user) => { // eslint-disable-line arrow-body-style
+                return user.session ? `${user.session.login}(${user.session.login_alias})` : undefined;
+            })
+            .filter((value) => value !== undefined)
+            .join(",\n");
 
         return m(".editron-toolbar__users",
             {
-                title: __("toolbar:users:tooltip"),
+                title: userList.length > 0 ? userList : __("toolbar:users:tooltip"),
+                "data-users": userList,
                 "class": users.length > 1 ? "active" : "inactive",
                 onclick: () => vnode.attrs.onclick(users)
             },
