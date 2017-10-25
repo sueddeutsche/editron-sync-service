@@ -15,7 +15,7 @@
     "socket.io-client": "^2.0.3"
   },
   "devDependencies": {
-    "editron-core": "^3.4.0",
+    "editron-core": "^3.5.0",
     "json-data-services": "^3.0.3",
     "mithril": "1.x",
     "restify": "^5.0.1",
