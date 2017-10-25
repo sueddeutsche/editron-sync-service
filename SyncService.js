@@ -16,6 +16,7 @@ class SyncService {
         this.controller = controller;
         this.dataService = controller.data();
         this.locationService = controller.location();
+        this.queue = [];
 
         this.onUpdate = this.onUpdate.bind(this);
         this.onSynched = this.onSynched.bind(this);
@@ -86,6 +87,7 @@ class SyncService {
 
     updateUserMeta(data = {}) {
         if (this.connected === false) {
+            this.queue.push({ method: "updateUserMeta", args: [data] });
             return;
         }
         data.id = this.transport.id;
@@ -122,6 +124,9 @@ class SyncService {
         } else {
             this.dataService.set("#", this.data.data, true);
         }
+
+        this.queue.forEach((task) => this[task.method](...task.args));
+        this.queue.length = 0;
     }
 
     onUpdate(event) {
