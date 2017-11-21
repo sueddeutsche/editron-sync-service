@@ -15,15 +15,15 @@
     "socket.io-client": "^2.0.3"
   },
   "devDependencies": {
-    "editron-core": "^3.5.0",
-    "json-data-services": "^3.0.3",
+    "editron-core": "^5.0.3",
+    "json-data-services": "^3.0.7",
     "mithril": "1.x",
     "restify": "^5.0.1",
     "socket.io": "^2.0.3"
   },
   "peerDependencies": {
-    "json-data-services": "3.x",
-    "editron-core": "3.x",
+    "json-data-services": "^3.0.7",
+    "editron-core": "^5.0.3",
     "mithril": "1.x"
   }
 }
