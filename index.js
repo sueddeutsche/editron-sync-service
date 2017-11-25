@@ -1,3 +1,3 @@
 module.exports = {
-	Service: require("./SyncService")
+    Service: require("./SyncService")
 };

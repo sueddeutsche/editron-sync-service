@@ -4,7 +4,7 @@ const socketio = require("socket.io");
 const JsonSync = require("json-sync");
 const InMemoryDataAdapter = require("json-sync/server/adapter/InMemoryDataAdapter");
 
-const PORT = process.env.PORT || 62019;
+const PORT = process.env.PORT || 5500;
 
 // setting up the diffsync server
 const transport = socketio.listen(server.server);
