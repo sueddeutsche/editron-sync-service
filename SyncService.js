@@ -1,6 +1,6 @@
 const mitt = require("mitt");
 const diffpatch = require("json-data-services/lib/utils/diffpatch");
-const JsonSyncClient = require("json-sync/src/client");
+const JsonSyncClient = require("json-sync/client");
 const COMMANDS = require("json-sync/src/commands");
 const socket = require("socket.io-client");
 
