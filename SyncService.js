@@ -1,7 +1,7 @@
 const mitt = require("mitt");
 const diffpatch = require("json-data-services/lib/utils/diffpatch");
 const JsonSyncClient = require("json-sync/client");
-const COMMANDS = require("json-sync/src/commands");
+const COMMANDS = require("json-sync/lib/commands");
 const socket = require("socket.io-client");
 
 const isValidUrl = /^https?:\/\/.*(:\d+)?.*$/;
