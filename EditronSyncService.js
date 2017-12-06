@@ -43,7 +43,7 @@ class EditronSyncService {
         this.use(transport, id, options.auth);
     }
 
-    use(transport, id, auth) {
+    use(transport, id, credentials) {
         this.id = id;
         this.transport = transport;
         this.client = new JsonSyncClient(this.transport, id, diffpatch.options);
@@ -51,7 +51,7 @@ class EditronSyncService {
         this.client.on(JsonSyncClient.EVENTS.ERROR, this.onError);
         this.client.on(JsonSyncClient.EVENTS.SYNCED, this.onSynched);
         this.transport.on(COMMANDS.updateUsers, (users) => this.updateUsers(users));
-        this.client.join("mysessionId");
+        this.client.join(credentials);
         console.log(`EditronSyncService: connecting to room '${id}'...`);
     }
 
