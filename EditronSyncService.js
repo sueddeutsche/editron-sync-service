@@ -1,13 +1,13 @@
 const mitt = require("mitt");
 const diffpatch = require("json-data-services/lib/utils/diffpatch");
-const JsonSyncClient = require("json-sync/src/client");
-const COMMANDS = require("json-sync/src/commands");
+const JsonSyncClient = require("json-sync/client");
+const COMMANDS = require("json-sync/lib/commands");
 const socket = require("socket.io-client");
 
 const isValidUrl = /^https?:\/\/.*(:\d+)?.*$/;
 
 
-class SyncService {
+class EditronSyncService {
 
     constructor(controller) {
         this.connected = false;
@@ -30,30 +30,29 @@ class SyncService {
 
     connect(url, id, options) {
         if (url == null || isValidUrl.test(url) === false) {
-            console.error("SyncService abort -- invalid id given", id);
+            console.error("EditronSyncService abort -- invalid id given", id);
             return;
         }
         if (id == null) {
-            console.error("SyncService abort -- invalid id given", id);
+            console.error("EditronSyncService abort -- invalid id given", id);
             return;
         }
 
         this.url = url;
-        console.log("create socket", url, options);
         const transport = socket(url, options);
-        this.use(transport, id);
+        this.use(transport, id, options.auth);
     }
 
-    use(transport, id) {
+    use(transport, id, credentials) {
         this.id = id;
         this.transport = transport;
         this.client = new JsonSyncClient(this.transport, id, diffpatch.options);
-        this.client.on("connected", this.onConnect);
-        this.client.on("error", this.onError);
-        this.client.on("synced", this.onSynched);
+        this.client.on(JsonSyncClient.EVENTS.CONNECTED, this.onConnect);
+        this.client.on(JsonSyncClient.EVENTS.ERROR, this.onError);
+        this.client.on(JsonSyncClient.EVENTS.SYNCED, this.onSynched);
         this.transport.on(COMMANDS.updateUsers, (users) => this.updateUsers(users));
-        this.client.initialize();
-        console.log(`SyncServer: connecting to room '${id}'...`);
+        this.client.join(credentials);
+        console.log(`EditronSyncService: connecting to room '${id}'...`);
     }
 
     // @todo this implementation currently misses update pointer events...
@@ -104,6 +103,7 @@ class SyncService {
     }
 
     onSynched() {
+        console.log("EditronSyncService <received data>", this.data.data);
         // an update from the server has been applied, you can perform the updates in your application now
         this.controller.setData(this.data.data, true);
     }
@@ -118,8 +118,10 @@ class SyncService {
 
         // the initial data has been loaded, you can initialize your application
         this.data = this.client.getData();
+        console.log("EditronSyncService <received initial data>", this.data.data);
         if (this.data.data == null) {
             this.data.data = this.dataService.get();
+            console.log("EditronSyncService <send initial data>", this.data.data);
             this.client.sync();
         } else {
             this.dataService.set("#", this.data.data, true);
@@ -132,16 +134,16 @@ class SyncService {
     onUpdate(event) {
         if (this.connected) {
             this.data.data = this.dataService.get();
+            console.log("EditronSyncService <send data>", this.data.data);
             this.client.sync();
         }
     }
 
     destroy() {
-        console.log("destroy socket");
         this.transport.disconnect();
         this.transport.destroy();
     }
 }
 
 
-module.exports = SyncService;
+module.exports = EditronSyncService;
