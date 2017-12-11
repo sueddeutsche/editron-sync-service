@@ -1,6 +1,6 @@
 {
   "name": "editron-sync-service",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "EditronSyncService.js",
   "scripts": {
@@ -10,12 +10,12 @@
   "author": "Sascha Goldhofer <sascha.goldhofer@sz.de> (https://github.com/sagold/)",
   "license": "ISC",
   "dependencies": {
-    "json-sync": "sueddeutsche/json-sync#develop",
+    "json-sync": "4",
     "mitt": "^1.0.1",
     "socket.io-client": "^2.0.3"
   },
   "devDependencies": {
-    "editron-core": "^5.0.3",
+    "editron-core": "^5.1.0",
     "json-data-services": "^3.0.7",
     "mithril": "1.x",
     "restify": "^5.0.1",
@@ -23,7 +23,7 @@
   },
   "peerDependencies": {
     "json-data-services": "^3.0.7",
-    "editron-core": "^5.0.3",
+    "editron-core": "^5.1.0",
     "mithril": "1.x"
   }
 }
