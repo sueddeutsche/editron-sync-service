@@ -5,6 +5,9 @@ const COMMANDS = require("json-sync/lib/commands");
 const socket = require("socket.io-client");
 
 const isValidUrl = /^https?:\/\/.*(:\d+)?.*$/;
+function cp(data) {
+    return JSON.parse(JSON.stringify(data));
+}
 
 
 class EditronSyncService {
@@ -103,9 +106,9 @@ class EditronSyncService {
     }
 
     onSynched() {
-        console.log("EditronSyncService <received data>", this.data.data);
+        console.log("EditronSyncService <received data>", cp(this.syncObject));
         // an update from the server has been applied, you can perform the updates in your application now
-        this.controller.setData(this.data.data, true);
+        this.controller.setData(this.syncObject.data, true);
     }
 
     onError(error) {
@@ -117,14 +120,20 @@ class EditronSyncService {
         console.info(`SyncServer connected on id ${this.id}`);
 
         // the initial data has been loaded, you can initialize your application
-        this.data = this.client.getData();
-        console.log("EditronSyncService <received initial data>", this.data.data);
-        if (this.data.data == null) {
-            this.data.data = this.dataService.get();
-            console.log("EditronSyncService <send initial data>", this.data.data);
-            this.client.sync();
+        this.syncObject = this.client.getData();
+        console.log("EditronSyncService <received initial data>", cp(this.syncObject));
+        if (this.syncObject.data == null) {
+            throw new Error("Empty data received from iggypus-data");
+            // this.syncObject.data = this.dataService.get();
+            // console.log("DATASERVICE DATA", cp(this.syncObject.data));
+            // console.log("EditronSyncService <send initial data>", cp(this.syncObject));
+            // this.client.sync();
+        } else if (this.syncObject.data._id) {
+            throw new Error("Received invalid data", this.syncObject.data);
+
         } else {
-            this.dataService.set("#", this.data.data, true);
+            // console.log("DATASERVICE SET", cp(this.syncObject));
+            this.dataService.set("#", this.syncObject.data, true);
         }
 
         this.queue.forEach((task) => this[task.method](...task.args));
@@ -133,8 +142,14 @@ class EditronSyncService {
 
     onUpdate(event) {
         if (this.connected) {
-            this.data.data = this.dataService.get();
-            console.log("EditronSyncService <send data>", this.data.data);
+            this.syncObject.data = this.dataService.get();
+
+            if (this.syncObject.data._id) {
+                throw new Error("Received invalid application data", this.syncObject.data);
+            }
+
+            // console.log("DATASERVICE DATA", cp(this.syncObject.data));
+            console.log("EditronSyncService <send data>", cp(this.syncObject));
             this.client.sync();
         }
     }
