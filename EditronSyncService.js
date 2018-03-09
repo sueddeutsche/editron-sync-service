@@ -132,7 +132,6 @@ class EditronSyncService {
             throw new Error("Received invalid data", this.syncObject.data);
 
         } else {
-            // console.log("DATASERVICE SET", cp(this.syncObject));
             this.dataService.set("#", this.syncObject.data, true);
         }
 
@@ -143,12 +142,9 @@ class EditronSyncService {
     onUpdate(event) {
         if (this.connected) {
             this.syncObject.data = this.dataService.get();
-
             if (this.syncObject.data._id) {
                 throw new Error("Received invalid application data", this.syncObject.data);
             }
-
-            // console.log("DATASERVICE DATA", cp(this.syncObject.data));
             console.log("EditronSyncService <send data>", cp(this.syncObject));
             this.client.sync();
         }
