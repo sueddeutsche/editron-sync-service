@@ -123,7 +123,7 @@ class EditronSyncService {
         this.syncObject = this.client.getData();
         console.log("EditronSyncService <received initial data>", cp(this.syncObject));
         if (this.syncObject.data == null) {
-            throw new Error("Empty data received from iggypus-data");
+            throw new Error("Initial data has no property 'data'");
             // this.syncObject.data = this.dataService.get();
             // console.log("DATASERVICE DATA", cp(this.syncObject.data));
             // console.log("EditronSyncService <send initial data>", cp(this.syncObject));
