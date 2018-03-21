@@ -108,7 +108,7 @@ class EditronSyncService {
     onSynched() {
         console.log("EditronSyncService <received data>", cp(this.syncObject));
         // an update from the server has been applied, you can perform the updates in your application now
-        this.controller.setData(this.syncObject.data, true);
+        this.controller.setData(this.syncObject.data);
     }
 
     onError(error) {
