@@ -108,7 +108,7 @@ class EditronSyncService {
     onSynched() {
         console.log("EditronSyncService <received data>", cp(this.syncObject));
         // an update from the server has been applied, you can perform the updates in your application now
-        this.controller.setData(this.syncObject.data, true);
+        this.controller.setData(this.syncObject.data);
     }
 
     onError(error) {
@@ -132,7 +132,7 @@ class EditronSyncService {
             throw new Error("Received invalid data", this.syncObject.data);
 
         } else {
-            this.dataService.set("#", this.syncObject.data, true);
+            this.controller.setData(this.syncObject.data);
         }
 
         this.queue.forEach((task) => this[task.method](...task.args));
