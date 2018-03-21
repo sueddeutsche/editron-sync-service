@@ -132,7 +132,7 @@ class EditronSyncService {
             throw new Error("Received invalid data", this.syncObject.data);
 
         } else {
-            this.dataService.set("#", this.syncObject.data, true);
+            this.controller.setData(this.syncObject.data);
         }
 
         this.queue.forEach((task) => this[task.method](...task.args));
