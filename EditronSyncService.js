@@ -9,6 +9,11 @@ function cp(data) {
     return JSON.parse(JSON.stringify(data));
 }
 
+const EVENTS = {
+    connect: "connect",
+    error: "error",
+    users: "users"
+};
 
 class EditronSyncService {
 
@@ -29,6 +34,10 @@ class EditronSyncService {
         this.dataService.on("afterUpdate", this.onUpdate);
         this.locationService.on("blur", () => this.updateUserMeta({ focused: false }));
         this.locationService.on("focus", (pointer) => this.updateUserMeta({ focused: pointer }));
+    }
+
+    get EVENTS() {
+        return EVENTS;
     }
 
     connect(url, id, options) {
@@ -54,6 +63,19 @@ class EditronSyncService {
         this.client.on(JsonSyncClient.EVENTS.ERROR, this.onError);
         this.client.on(JsonSyncClient.EVENTS.SYNCED, this.onSynched);
         this.transport.on(COMMANDS.updateUsers, (users) => this.updateUsers(users));
+        this.transport.on("reconnect", () => {
+            this.connected = true;
+            this.emitter.emit(EVENTS.connect);
+        });
+        ["connect_error", "connect_timeout"].forEach((evtName) => {
+            this.transport.on(evtName, (err) => {
+                if (err) {
+                    err.message += ` (${evtName})`;
+                }
+                this.onError(err);
+            });
+        });
+
         this.client.join(credentials);
         console.log(`EditronSyncService: connecting to room '${id}'...`);
     }
@@ -79,7 +101,7 @@ class EditronSyncService {
 
     updateUsers(users) {
         // console.log("Update users and meta", users);
-        this.emitter.emit("users", {
+        this.emitter.emit(EVENTS.users, {
             userId: this.transport.id,
             users
         });
@@ -113,6 +135,8 @@ class EditronSyncService {
 
     onError(error) {
         console.error("SyncServer failed to connect", error);
+        this.connected = this.transport.connected;
+        this.emitter.emit(EVENTS.error, error);
     }
 
     onConnect() {
@@ -137,6 +161,8 @@ class EditronSyncService {
 
         this.queue.forEach((task) => this[task.method](...task.args));
         this.queue.length = 0;
+
+        this.emitter.emit(EVENTS.connect);
     }
 
     onUpdate(event) {
