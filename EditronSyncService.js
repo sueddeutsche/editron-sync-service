@@ -69,10 +69,24 @@ class EditronSyncService {
         });
         ["connect_error", "connect_timeout"].forEach((evtName) => {
             this.transport.on(evtName, (err) => {
-                if (err) {
-                    err.message += ` (${evtName})`;
+                try {
+                    if (err != null) {
+                        if (err instanceof Error) {
+                            err.message += ` (${evtName})`;
+                        } else if (typeof err === "string") {
+                            err.message += new Error(` (${evtName})`);
+                        }
+                    }
+                } catch (e) {
+                    console.log("Failed to update transport error message", e);
                 }
-                this.onError(err);
+
+                // Wrap in try/catch, because an exception here would prevent a reconnect
+                try {
+                    this.onError(err);
+                } catch (eEvt) {
+                    console.log("onError event handler for transport errors failed", eEvt);
+                }
             });
         });
 
